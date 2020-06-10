@@ -24,10 +24,36 @@
 #ifndef QML_EDUPALS_N4D_PLUGIN
 #define QML_EDUPALS_N4D_PLUGIN
 
+#include <n4d.hpp>
+
 #include <QQmlExtensionPlugin>
 #include <QObject>
 #include <QVariant>
 #include <QString>
+
+class Client: public QObject
+{
+    Q_OBJECT
+    
+    Q_PROPERTY(QString address MEMBER m_address)
+    Q_PROPERTY(int port MEMBER m_port)
+    Q_PROPERTY(QString user MEMBER m_user)
+    Q_PROPERTY(QString password MEMBER m_password)
+
+protected:
+    
+    QString m_address;
+    int m_port;
+    
+    QString m_user;
+    QString m_password;
+    
+public:
+    
+    Client();
+    
+    Q_INVOKABLE QVariantList call(QString plugin,QString method,QVariantList params);
+};
 
 class N4DPlugin : public QQmlExtensionPlugin
 {

@@ -23,13 +23,37 @@
 
 #include "plugin.h"
 
+#include <QQmlEngine>
+#include <QAbstractItemModel>
+#include <QMimeData>
+
+#include <iostream>
+
+using namespace std;
+
+Client::Client()
+{
+    m_address=QLatin1String("https://localhost");
+    m_port=9779;
+    
+}
+
+QVariantList Client::call(QString plugin,QString method,QVariantList params)
+{
+    QVariantList ret;
+    
+    clog<<"call"<<endl;
+    
+    return ret;
+}
+
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
 {
 }
 
 void N4DPlugin::registerTypes(const char* uri)
 {
-    
+    qmlRegisterType<Client> (uri, 1, 0, "Client");
     qmlRegisterAnonymousType<QMimeData>(uri, 1);
     
 }
