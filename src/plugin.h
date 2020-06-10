@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2020 Edupals project
+ *
+ * Author:
+ *  Enrique Medina Gremaldos <quiqueiii@gmail.com>
+ *
+ * Source:
+ *  https://github.com/edupals/qml-module-edupals-n4d
+ *
+ * This file is a part of qml-module-edupals-n4d.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ */
+
+#ifndef QML_EDUPALS_N4D_PLUGIN
+#define QML_EDUPALS_N4D_PLUGIN
+
+#include <QQmlExtensionPlugin>
+#include <QObject>
+#include <QVariant>
+#include <QString>
+
+class N4DPlugin : public QQmlExtensionPlugin
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA (IID "Edupals.N4D")
+
+public:
+    explicit N4DPlugin(QObject *parent = nullptr);
+    void registerTypes(const char *uri) override;
+};
+ 
+
+#endif
