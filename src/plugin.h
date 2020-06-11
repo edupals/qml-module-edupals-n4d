@@ -51,8 +51,31 @@ protected:
 public:
     
     Client();
+    ~Client();
     
-    Q_INVOKABLE QVariantList call(QString plugin,QString method,QVariantList params);
+};
+
+class Proxy: public QObject
+{
+    Q_OBJECT
+    
+    Q_PROPERTY(QString plugin MEMBER m_plugin)
+    Q_PROPERTY(QString method MEMBER m_method)
+    Q_PROPERTY(Client* client MEMBER m_client)
+    
+protected:
+    QString m_plugin;
+    QString m_method;
+    Client* m_client;
+    
+public:
+    Proxy();
+    Q_INVOKABLE void call(QVariantList params);
+
+Q_SIGNALS:
+    void response(QVariantList value);
+    void error(QString what);
+
 };
 
 class N4DPlugin : public QQmlExtensionPlugin

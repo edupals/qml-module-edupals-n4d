@@ -36,15 +36,27 @@ Client::Client()
     m_address=QLatin1String("https://localhost");
     m_port=9779;
     
+    clog<<"Client constructor"<<endl;
 }
 
-QVariantList Client::call(QString plugin,QString method,QVariantList params)
+Client::~Client()
 {
-    QVariantList ret;
+    clog<<"Client destructor"<<endl;
+}
+
+Proxy::Proxy()
+{
+    m_client=nullptr;
+}
+
+void Proxy::call(QVariantList params)
+{
+    QVariantList value;
+    value.append(QLatin1String("True survivor"));
     
-    clog<<"call"<<endl;
+    emit response(value);
     
-    return ret;
+    m_client->touch();
 }
 
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
@@ -54,6 +66,7 @@ N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
 void N4DPlugin::registerTypes(const char* uri)
 {
     qmlRegisterType<Client> (uri, 1, 0, "Client");
+    qmlRegisterType<Proxy> (uri, 1, 0, "Proxy");
     qmlRegisterAnonymousType<QMimeData>(uri, 1);
     
 }
