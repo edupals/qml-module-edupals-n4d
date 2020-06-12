@@ -30,6 +30,19 @@
 #include <QObject>
 #include <QVariant>
 #include <QString>
+#include <QList>
+
+class Proxy;
+
+class Worker: public QThread
+{
+    
+public Q_SLOTS:
+    void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
+
+Q_SIGNALS:
+    void result();
+};
 
 class Client: public QObject
 {
@@ -53,6 +66,8 @@ public:
     Client();
     ~Client();
     
+public Q_SLOTS:
+    void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
 };
 
 class Proxy: public QObject
@@ -71,6 +86,9 @@ protected:
 public:
     Proxy();
     Q_INVOKABLE void call(QVariantList params);
+    
+public Q_SLOTS:
+    void push();
 
 Q_SIGNALS:
     void response(QVariantList value);

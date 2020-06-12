@@ -44,6 +44,13 @@ Client::~Client()
     clog<<"Client destructor"<<endl;
 }
 
+void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList params)
+{
+    
+    
+    
+}
+
 Proxy::Proxy()
 {
     m_client=nullptr;
@@ -51,12 +58,21 @@ Proxy::Proxy()
 
 void Proxy::call(QVariantList params)
 {
+    if (m_client) {
+        m_client->push(this,m_plugin,m_method,params);
+    }
+    /*
     QVariantList value;
     value.append(QLatin1String("True survivor"));
     
     emit response(value);
     
     m_client->touch();
+    */
+}
+
+void Proxy::push()
+{
 }
 
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
