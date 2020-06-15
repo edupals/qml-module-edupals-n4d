@@ -35,32 +35,46 @@
 
 class Proxy;
 
-class Worker: public QThread
+class Job: public QObject
 {
     Q_OBJECT
     
-protected:
-
+public:
+    Proxy* m_proxy;
+    
     QString m_address;
     int m_port;
 
     QString m_user;
     QString m_password;
-
-public:
-    Worker(QString user,QString password,QString address,int port) :
+    
+    QString m_plugin;
+    QString m_method;
+    
+    QVariantList m_params;
+    
+    Job(Proxy* proxy,QString address,int port,QString user,QString password, QString plugin, QString method, QVariantList params) :
+        m_proxy(proxy),
+        m_address(address),
+        m_port(port),
         m_user(user),
         m_password(password),
-        m_address(address),
-        m_port(port) {
+        m_plugin(plugin),
+        m_method(method),
+        m_params(params) {
             
         }
+};
+
+class Worker: public QThread
+{
+    Q_OBJECT
     
 public Q_SLOTS:
-    void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
+    void push(Job* job);
 
 Q_SIGNALS:
-    void result(Proxy* proxy,QVariantList value);
+    void result(Job* job,QVariantList value);
 };
 
 class Client: public QObject
@@ -88,7 +102,7 @@ public:
     ~Client();
 
 protected Q_SLOTS:
-    void onResult(Proxy* proxy, QVariantList value);
+    void onResult(Job* job, QVariantList value);
     
 public Q_SLOTS:
     void push(Proxy* proxy, QString plugin, QString method, QVariantList params);

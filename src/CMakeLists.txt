@@ -16,7 +16,7 @@ include(KDEInstallDirs)
 include(KDEFrameworkCompilerSettings NO_POLICY_SCOPE)
 include(KDECMakeSettings)
 
-add_library(edupalsn4dplugin SHARED plugin.cpp)
+add_library(edupalsn4dplugin SHARED plugin.cpp variant.cpp)
 
 target_link_libraries (edupalsn4dplugin
     Qt5::Qml
