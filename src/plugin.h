@@ -31,17 +31,36 @@
 #include <QVariant>
 #include <QString>
 #include <QList>
+#include <QThread>
 
 class Proxy;
 
 class Worker: public QThread
 {
+    Q_OBJECT
+    
+protected:
+
+    QString m_address;
+    int m_port;
+
+    QString m_user;
+    QString m_password;
+
+public:
+    Worker(QString user,QString password,QString address,int port) :
+        m_user(user),
+        m_password(password),
+        m_address(address),
+        m_port(port) {
+            
+        }
     
 public Q_SLOTS:
     void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
 
 Q_SIGNALS:
-    void result();
+    void result(Proxy* proxy,QVariantList value);
 };
 
 class Client: public QObject
@@ -61,10 +80,15 @@ protected:
     QString m_user;
     QString m_password;
     
+    Worker* m_worker;
+    
 public:
     
     Client();
     ~Client();
+
+protected Q_SLOTS:
+    void onResult(Proxy* proxy, QVariantList value);
     
 public Q_SLOTS:
     void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
@@ -88,7 +112,7 @@ public:
     Q_INVOKABLE void call(QVariantList params);
     
 public Q_SLOTS:
-    void push();
+    void push(QVariantList value);
 
 Q_SIGNALS:
     void response(QVariantList value);

@@ -31,24 +31,54 @@
 
 using namespace std;
 
+void Worker::push(Proxy* proxy, QString plugin, QString method, QVariantList params)
+{
+    QVariantList value;
+    QString v = QLatin1String("call::")+plugin+QLatin1String("::")+method;
+    value.append(v);
+    
+    emit result(proxy,value);
+}
+
 Client::Client()
 {
     m_address=QLatin1String("https://localhost");
     m_port=9779;
     
     clog<<"Client constructor"<<endl;
+    
+    m_worker = new Worker(m_user,m_password,m_address,m_port);
+    
+    connect(m_worker,&Worker::result,this,&Client::onResult);
 }
 
 Client::~Client()
 {
     clog<<"Client destructor"<<endl;
+    
+    m_worker->quit();
+    m_worker->wait(1000);
+    delete m_worker;
+}
+
+void Client::onResult(Proxy* proxy, QVariantList value)
+{
+    clog<<"result:"<<endl;
+    for (int n=0;n<value.count();n++) {
+        clog<<"* "<<value[n].toString().toStdString()<<endl;
+    }
+    
+    proxy->push(value);
 }
 
 void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList params)
 {
-    
-    
-    
+    QMetaObject::invokeMethod(m_worker,"push",Qt::QueuedConnection,
+            Q_ARG(Proxy*,proxy),
+            Q_ARG(QString,plugin),
+            Q_ARG(QString,method),
+            Q_ARG(QVariantList,params)
+    );
 }
 
 Proxy::Proxy()
@@ -61,18 +91,11 @@ void Proxy::call(QVariantList params)
     if (m_client) {
         m_client->push(this,m_plugin,m_method,params);
     }
-    /*
-    QVariantList value;
-    value.append(QLatin1String("True survivor"));
-    
-    emit response(value);
-    
-    m_client->touch();
-    */
 }
 
-void Proxy::push()
+void Proxy::push(QVariantList value)
 {
+    emit response(value);
 }
 
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
