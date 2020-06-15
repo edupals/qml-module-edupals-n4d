@@ -52,8 +52,18 @@ variant::Variant convert(QVariant in)
         
         QMap<QString, QVariant>::const_iterator i = m.constBegin();
         while (i != m.constEnd()) {
-            //cout << i.key().toStdString() << endl;
             ret[i.key().toStdString()] = convert(i.value());
+            ++i;
+        }
+    }
+    
+    if (tname=="QVariantList") {
+        ret = variant::Variant::create_array(0);
+        QVariantList l = in.toList();
+        
+        QList<QVariant>::const_iterator i = l.constBegin();
+        while (i != l.constEnd()) {
+            ret.append(convert(*i));
             ++i;
         }
     }
@@ -64,6 +74,14 @@ variant::Variant convert(QVariant in)
 QVariant convert(variant::Variant in)
 {
     QVariant ret;
+    
+    if (in.type()==variant::Type::Int32) {
+        ret=QVariant(in.get_int32());
+    }
+    
+    if (in.type()==variant::Type::Double) {
+        ret=QVariant(in.get_double());
+    }
     
     return ret;
 }
