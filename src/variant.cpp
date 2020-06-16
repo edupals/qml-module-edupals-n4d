@@ -83,5 +83,29 @@ QVariant convert(variant::Variant in)
         ret=QVariant(in.get_double());
     }
     
+    if (in.type()==variant::Type::String) {
+        ret=QVariant(QString::fromUtf8(in.get_string().c_str()));
+    }
+    
+    if (in.type()==variant::Type::Struct) {
+        QMap<QString,QVariant> m;
+        
+        for (string key:in.keys()) {
+            m[QString::fromUtf8(key.c_str())]=convert(in[key]);
+        }
+        
+        ret=QVariant(m);
+    }
+    
+    if (in.type()==variant::Type::Array) {
+        QList<QVariant> l;
+        
+        for (size_t n=0;n<in.count();n++) {
+            l.append(convert(in[n]));
+        }
+        
+        ret=QVariant(l);
+    }
+    
     return ret;
 }

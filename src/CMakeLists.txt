@@ -10,11 +10,12 @@ find_package(Qt5 REQUIRED COMPONENTS Qml Quick)
 
 find_package(EdupalsBase REQUIRED)
 find_package(EdupalsN4D REQUIRED)
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fexceptions")
 
 include(KDEInstallDirs)
 include(KDEFrameworkCompilerSettings NO_POLICY_SCOPE)
 include(KDECMakeSettings)
+
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fexceptions")
 
 add_library(edupalsn4dplugin SHARED plugin.cpp variant.cpp)
 

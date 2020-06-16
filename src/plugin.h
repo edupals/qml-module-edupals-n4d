@@ -66,15 +66,23 @@ public:
         }
 };
 
-class Worker: public QThread
+class Worker: public QObject
 {
     Q_OBJECT
+
+protected:
+    QThread* m_thread;
+    
+public:
+    Worker();
+    ~Worker();
     
 public Q_SLOTS:
     void push(Job* job);
 
 Q_SIGNALS:
-    void result(Job* job,QVariantList value);
+    void result(Job* job,QVariant value);
+    void error(Job* job,int code, QString what);
 };
 
 class Client: public QObject
@@ -102,7 +110,8 @@ public:
     ~Client();
 
 protected Q_SLOTS:
-    void onResult(Job* job, QVariantList value);
+    void onResult(Job* job, QVariant value);
+    void onError(Job* job,int code, QString what);
     
 public Q_SLOTS:
     void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
@@ -126,11 +135,12 @@ public:
     Q_INVOKABLE void call(QVariantList params);
     
 public Q_SLOTS:
-    void push(QVariantList value);
+    void push(QVariant value);
+    void push(int code,QString what);
 
 Q_SIGNALS:
-    void response(QVariantList value);
-    void error(QString what);
+    void response(QVariant value);
+    void error(int code,QString what);
 
 };
 

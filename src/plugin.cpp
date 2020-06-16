@@ -32,21 +32,56 @@
 #include <QMimeData>
 
 #include <iostream>
+#include <vector>
 
 using namespace edupals;
 using namespace std;
 
+Worker::Worker()
+{
+    m_thread = new QThread();
+    moveToThread(m_thread);
+    
+    m_thread->start();
+}
+
+Worker::~Worker()
+{
+    m_thread->quit();
+    m_thread->wait(1000);
+    
+    delete m_thread;
+}
+
 void Worker::push(Job* job)
 {
+    vector<variant::Variant> params;
+    variant::Variant res;
+    
     for (int n=0;n<job->m_params.count();n++) {
         clog<<"type: "<<job->m_params[n].typeName()<<endl;
         variant::Variant v = convert(job->m_params[n]);
         clog<<"variant:"<<v<<endl;
+        
+        params.push_back(v);
     }
+    clog<<"calling...";
+    n4d::Client nc(job->m_address.toStdString(),
+                   job->m_port,
+                   job->m_user.toStdString(),
+                   job->m_password.toStdString());
     
-    QVariantList value;
-    QString v = QLatin1String("call::")+job->m_plugin+QLatin1String("::")+job->m_method;
-    value.append(v);
+    try {
+        res = nc.call(job->m_plugin.toStdString(),
+                      job->m_method.toStdString());
+    }
+    catch (std::exception& e) {
+        
+        emit error(job,1,QString::fromUtf8(e.what()));
+    }
+    clog<<"done"<<endl;
+    clog<<"worker:"<<res<<endl;
+    QVariant value = convert(res);
     
     emit result(job,value);
 }
@@ -61,36 +96,41 @@ Client::Client()
     m_worker = new Worker();
     
     connect(m_worker,&Worker::result,this,&Client::onResult);
+    connect(m_worker,&Worker::error,this,&Client::onError);
+    
 }
 
 Client::~Client()
 {
     clog<<"Client destructor"<<endl;
     
-    m_worker->quit();
-    m_worker->wait(1000);
     delete m_worker;
 }
 
-void Client::onResult(Job* job, QVariantList value)
+void Client::onResult(Job* job, QVariant value)
 {
     clog<<"result:"<<endl;
-    for (int n=0;n<value.count();n++) {
-        clog<<"* "<<value[n].toString().toStdString()<<endl;
-    }
+    
+    clog<<"* "<<value.toString().toStdString()<<endl;
     
     job->m_proxy->push(value);
     
     delete job;
 }
 
+void Client::onError(Job* job,int code, QString what)
+{
+    job->m_proxy->push(code,what);
+    delete job;
+}
+
 void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList params)
 {
     Job* job = new Job(proxy,m_address,m_port,m_user,m_password,plugin,method,params);
-    
+    clog<<"pushing...";
     QMetaObject::invokeMethod(m_worker,"push",Qt::QueuedConnection,
             Q_ARG(Job*,job));
-    
+    clog<<"done"<<endl;
 }
 
 Proxy::Proxy()
@@ -105,9 +145,14 @@ void Proxy::call(QVariantList params)
     }
 }
 
-void Proxy::push(QVariantList value)
+void Proxy::push(QVariant value)
 {
     emit response(value);
+}
+
+void Proxy::push(int code,QString what)
+{
+    emit error(code,what);
 }
 
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
