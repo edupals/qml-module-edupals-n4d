@@ -40,7 +40,7 @@ using namespace std;
 Worker::Worker()
 {
     m_thread = new QThread();
-    moveToThread(m_thread);
+    //moveToThread(m_thread);
     
     m_thread->start();
 }
@@ -65,11 +65,19 @@ void Worker::push(Job* job)
         
         params.push_back(v);
     }
-    clog<<"calling...";
-    n4d::Client nc(job->m_address.toStdString(),
-                   job->m_port,
-                   job->m_user.toStdString(),
-                   job->m_password.toStdString());
+    
+    n4d::Client nc;
+    
+    if (job->m_user.size()!=0) {
+        nc=n4d::Client (job->m_address.toStdString(),
+               job->m_port,
+               job->m_user.toStdString(),
+               job->m_password.toStdString());
+    }
+    else {
+        nc=n4d::Client (job->m_address.toStdString(),
+           job->m_port);
+    }
     
     try {
         res = nc.call(job->m_plugin.toStdString(),
@@ -79,10 +87,10 @@ void Worker::push(Job* job)
         
         emit error(job,1,QString::fromUtf8(e.what()));
     }
-    clog<<"done"<<endl;
-    clog<<"worker:"<<res<<endl;
-    QVariant value = convert(res);
     
+    QVariant value = convert(res);
+    //clog<<"value:"<<value.typeName()<<endl;
+    //clog<<"worker:"<<res<<endl;
     emit result(job,value);
 }
 
@@ -90,6 +98,7 @@ Client::Client()
 {
     m_address=QLatin1String("https://localhost");
     m_port=9779;
+    m_anonymous=false;
     
     clog<<"Client constructor"<<endl;
     
@@ -126,7 +135,15 @@ void Client::onError(Job* job,int code, QString what)
 
 void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList params)
 {
-    Job* job = new Job(proxy,m_address,m_port,m_user,m_password,plugin,method,params);
+    Job* job;
+    
+    if (m_anonymous) {
+        job = new Job(proxy,m_address,m_port,QLatin1String(""),QLatin1String(""),plugin,method,params);
+    } 
+    else {
+        job = new Job(proxy,m_address,m_port,m_user,m_password,plugin,method,params);
+    }
+    
     clog<<"pushing...";
     QMetaObject::invokeMethod(m_worker,"push",Qt::QueuedConnection,
             Q_ARG(Job*,job));
@@ -147,6 +164,8 @@ void Proxy::call(QVariantList params)
 
 void Proxy::push(QVariant value)
 {
+    clog<<"value:"<<value.typeName()<<endl;
+    
     emit response(value);
 }
 

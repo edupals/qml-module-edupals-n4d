@@ -75,6 +75,12 @@ QVariant convert(variant::Variant in)
 {
     QVariant ret;
     
+    //clog<<"convert type:"<<static_cast<int>(in.type())<<endl;
+    
+    if (in.type()==variant::Type::Boolean) {
+        ret=QVariant(in.get_boolean());
+    }
+    
     if (in.type()==variant::Type::Int32) {
         ret=QVariant(in.get_int32());
     }
@@ -105,6 +111,10 @@ QVariant convert(variant::Variant in)
         }
         
         ret=QVariant(l);
+    }
+    
+    if(ret.isNull()) {
+        clog<<"NULL variant"<<endl;
     }
     
     return ret;

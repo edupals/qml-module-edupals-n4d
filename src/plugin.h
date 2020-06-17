@@ -93,7 +93,8 @@ class Client: public QObject
     Q_PROPERTY(int port MEMBER m_port)
     Q_PROPERTY(QString user MEMBER m_user)
     Q_PROPERTY(QString password MEMBER m_password)
-
+    Q_PROPERTY(bool anonymous MEMBER m_anonymous)
+    
 protected:
     
     QString m_address;
@@ -101,6 +102,8 @@ protected:
     
     QString m_user;
     QString m_password;
+    
+    bool m_anonymous;
     
     Worker* m_worker;
     
