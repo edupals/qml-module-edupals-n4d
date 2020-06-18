@@ -68,14 +68,16 @@ variant::Variant convert(QVariant in)
         }
     }
     
+    if (ret.none()) {
+        cerr<<"Unhandled variant conversion:"<<tname<<endl;
+    }
+    
     return ret;
 }
 
 QVariant convert(variant::Variant in)
 {
     QVariant ret;
-    
-    //clog<<"convert type:"<<static_cast<int>(in.type())<<endl;
     
     if (in.type()==variant::Type::Boolean) {
         ret=QVariant(in.get_boolean());
@@ -114,7 +116,7 @@ QVariant convert(variant::Variant in)
     }
     
     if(ret.isNull()) {
-        clog<<"NULL variant"<<endl;
+        cerr<<"Unhandled variant conversion:"<<static_cast<int>(in.type())<<endl;
     }
     
     return ret;

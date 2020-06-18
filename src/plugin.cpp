@@ -40,7 +40,7 @@ using namespace std;
 Worker::Worker()
 {
     m_thread = new QThread();
-    //moveToThread(m_thread);
+    moveToThread(m_thread);
     
     m_thread->start();
 }
@@ -59,9 +59,7 @@ void Worker::push(Job* job)
     variant::Variant res;
     
     for (int n=0;n<job->m_params.count();n++) {
-        clog<<"type: "<<job->m_params[n].typeName()<<endl;
         variant::Variant v = convert(job->m_params[n]);
-        clog<<"variant:"<<v<<endl;
         
         params.push_back(v);
     }
@@ -100,8 +98,6 @@ Client::Client()
     m_port=9779;
     m_anonymous=false;
     
-    clog<<"Client constructor"<<endl;
-    
     m_worker = new Worker();
     
     connect(m_worker,&Worker::result,this,&Client::onResult);
@@ -111,17 +107,11 @@ Client::Client()
 
 Client::~Client()
 {
-    clog<<"Client destructor"<<endl;
-    
     delete m_worker;
 }
 
 void Client::onResult(Job* job, QVariant value)
 {
-    clog<<"result:"<<endl;
-    
-    clog<<"* "<<value.toString().toStdString()<<endl;
-    
     job->m_proxy->push(value);
     
     delete job;
@@ -144,10 +134,8 @@ void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList par
         job = new Job(proxy,m_address,m_port,m_user,m_password,plugin,method,params);
     }
     
-    clog<<"pushing...";
     QMetaObject::invokeMethod(m_worker,"push",Qt::QueuedConnection,
             Q_ARG(Job*,job));
-    clog<<"done"<<endl;
 }
 
 Proxy::Proxy()
@@ -164,7 +152,6 @@ void Proxy::call(QVariantList params)
 
 void Proxy::push(QVariant value)
 {
-    clog<<"value:"<<value.typeName()<<endl;
     
     emit response(value);
 }
