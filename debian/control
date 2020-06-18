@@ -1,0 +1,13 @@
+Source: qml-module-edupals-n4d
+Section: utils
+Priority: optional
+Maintainer: Enrique Medina Gremaldos <quiqueiii@gmail.com>
+Build-Depends: debhelper (>=9), zero-dev, python3-poinstaller, llxsrchelper, cmake, extra-cmake-modules, qtbase5-dev, qtdeclarative5-dev, libkf5i18n-dev, libkf5coreaddons-dev
+Standards-Version: 3.9.7
+Homepage: http://lliurex.net
+
+Package: qml-module-edupals-n4d
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, plasma-desktop, lliurex-desktop-plasma-look-and-feel
+Description: Select between available LliureX's desktop layouts
+ Allows user to change the LliureX's desktop layout
