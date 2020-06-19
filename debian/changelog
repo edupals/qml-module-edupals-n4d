@@ -1,5 +1,6 @@
 qml-module-edupals-n4d (1.0.0.0) bionic; urgency=medium
 
   * Initial release.
+  * Master release: 6232f1fb92147760630d31bca012b75824b98c5b
 
  -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Fri, 19 Jun 2020 10:17:54 +0200
