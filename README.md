@@ -1,8 +1,7 @@
 # qml-module-edupals-n4d
 qml plugin for accessing edupals n4d rpc server
 
-Usage:
-
+```
 import Edupals.N4D 1.0 as N4D
 
 Item {
@@ -66,5 +65,5 @@ Rectangle
         list_sources.call([])       
     }
 }
-
 }
+```
