@@ -1,4 +1,4 @@
-qml-module-edupals-n4d (1.0.0.1) bionic; urgency=medium
+qml-module-edupals-n4d (1.0.1.0) bionic; urgency=medium
 
   * Master release: 5a8a8dc394bcd952c83ebeb7366be28b875f2b66
   * Fixed bug with exceptions not being properly handled
