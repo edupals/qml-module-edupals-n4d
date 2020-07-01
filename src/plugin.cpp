@@ -80,16 +80,13 @@ void Worker::push(Job* job)
     try {
         res = nc.call(job->m_plugin.toStdString(),
                       job->m_method.toStdString());
+        
+        QVariant value = convert(res);
+        emit result(job,value);
     }
     catch (std::exception& e) {
-        
         emit error(job,1,QString::fromUtf8(e.what()));
     }
-    
-    QVariant value = convert(res);
-    //clog<<"value:"<<value.typeName()<<endl;
-    //clog<<"worker:"<<res<<endl;
-    emit result(job,value);
 }
 
 Client::Client()
