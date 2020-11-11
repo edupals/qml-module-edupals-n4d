@@ -16,6 +16,7 @@ include(KDEFrameworkCompilerSettings NO_POLICY_SCOPE)
 include(KDECMakeSettings)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fexceptions")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -foperator-names")
 
 add_library(edupalsn4dplugin SHARED plugin.cpp variant.cpp)
 
