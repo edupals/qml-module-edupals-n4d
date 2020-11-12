@@ -46,7 +46,7 @@ class Client: public QObject
     Q_PROPERTY(QString user MEMBER m_user)
     Q_PROPERTY(QString password MEMBER m_password)
     Q_PROPERTY(QString key MEMBER m_key)
-    Q_PROPERTY(CredentialType credential MEMBER m_credentialType)
+    Q_PROPERTY(CredentialType credential MEMBER m_credential)
     
 public:
     
@@ -65,7 +65,7 @@ protected:
     QString m_password;
     QString m_key;
     
-    CredentialType m_credentialType;
+    CredentialType m_credential;
     
     Worker* m_worker;
     
@@ -117,19 +117,21 @@ public:
     QString m_user;
     QString m_password;
     QString m_key;
-    Client::CredentialType m_credentialType;
+    Client::CredentialType m_credential;
     
     QString m_plugin;
     QString m_method;
     
     QVariantList m_params;
     
-    Job(Proxy* proxy,QString address,int port,QString user,QString password, QString plugin, QString method, QVariantList params) :
+    Job(Proxy* proxy,QString address,int port,QString user,QString password,QString key, Client::CredentialType credential, QString plugin, QString method, QVariantList params) :
         m_proxy(proxy),
         m_address(address),
         m_port(port),
         m_user(user),
         m_password(password),
+        m_key(key),
+        m_credential(credential),
         m_plugin(plugin),
         m_method(method),
         m_params(params) {
