@@ -92,8 +92,8 @@ void Worker::push(Job* job)
 Client::Client()
 {
     m_address=QLatin1String("https://localhost");
-    m_port=9779;
-    m_anonymous=false;
+    m_port=9800;
+    m_credentialType = Client::Anonymous;
     
     m_worker = new Worker();
     
@@ -123,14 +123,14 @@ void Client::onError(Job* job,int code, QString what)
 void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList params)
 {
     Job* job;
-    
+    /*
     if (m_anonymous) {
         job = new Job(proxy,m_address,m_port,QLatin1String(""),QLatin1String(""),plugin,method,params);
     } 
     else {
         job = new Job(proxy,m_address,m_port,m_user,m_password,plugin,method,params);
     }
-    
+    */
     QMetaObject::invokeMethod(m_worker,"push",Qt::QueuedConnection,
             Q_ARG(Job*,job));
 }
@@ -149,7 +149,6 @@ void Proxy::call(QVariantList params)
 
 void Proxy::push(QVariant value)
 {
-    
     emit response(value);
 }
 

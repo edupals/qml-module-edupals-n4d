@@ -33,7 +33,76 @@
 #include <QList>
 #include <QThread>
 
+class Worker;
+class Job;
 class Proxy;
+
+class Client: public QObject
+{
+    Q_OBJECT
+    
+    Q_PROPERTY(QString address MEMBER m_address)
+    Q_PROPERTY(int port MEMBER m_port)
+    Q_PROPERTY(QString user MEMBER m_user)
+    Q_PROPERTY(QString password MEMBER m_password)
+    Q_PROPERTY(QString key MEMBER m_key)
+    Q_PROPERTY(CredentialType credential MEMBER m_credentialType)
+    
+public:
+    
+    enum CredentialType { Anonymous, Password, Key, MasterKey};
+    Q_ENUM(CredentialType)
+    
+    Client();
+    ~Client();
+
+protected:
+    
+    QString m_address;
+    int m_port;
+    
+    QString m_user;
+    QString m_password;
+    QString m_key;
+    
+    CredentialType m_credentialType;
+    
+    Worker* m_worker;
+    
+protected Q_SLOTS:
+    void onResult(Job* job, QVariant value);
+    void onError(Job* job,int code, QString what);
+    
+public Q_SLOTS:
+    void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
+};
+
+class Proxy: public QObject
+{
+    Q_OBJECT
+    
+    Q_PROPERTY(QString plugin MEMBER m_plugin)
+    Q_PROPERTY(QString method MEMBER m_method)
+    Q_PROPERTY(Client* client MEMBER m_client)
+    
+protected:
+    QString m_plugin;
+    QString m_method;
+    Client* m_client;
+    
+public:
+    Proxy();
+    Q_INVOKABLE void call(QVariantList params);
+    
+public Q_SLOTS:
+    void push(QVariant value);
+    void push(int code,QString what);
+
+Q_SIGNALS:
+    void response(QVariant value);
+    void error(int code,QString what);
+
+};
 
 class Job: public QObject
 {
@@ -47,6 +116,8 @@ public:
 
     QString m_user;
     QString m_password;
+    QString m_key;
+    Client::CredentialType m_credentialType;
     
     QString m_plugin;
     QString m_method;
@@ -83,68 +154,6 @@ public Q_SLOTS:
 Q_SIGNALS:
     void result(Job* job,QVariant value);
     void error(Job* job,int code, QString what);
-};
-
-class Client: public QObject
-{
-    Q_OBJECT
-    
-    Q_PROPERTY(QString address MEMBER m_address)
-    Q_PROPERTY(int port MEMBER m_port)
-    Q_PROPERTY(QString user MEMBER m_user)
-    Q_PROPERTY(QString password MEMBER m_password)
-    Q_PROPERTY(bool anonymous MEMBER m_anonymous)
-    
-protected:
-    
-    QString m_address;
-    int m_port;
-    
-    QString m_user;
-    QString m_password;
-    
-    bool m_anonymous;
-    
-    Worker* m_worker;
-    
-public:
-    
-    Client();
-    ~Client();
-
-protected Q_SLOTS:
-    void onResult(Job* job, QVariant value);
-    void onError(Job* job,int code, QString what);
-    
-public Q_SLOTS:
-    void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
-};
-
-class Proxy: public QObject
-{
-    Q_OBJECT
-    
-    Q_PROPERTY(QString plugin MEMBER m_plugin)
-    Q_PROPERTY(QString method MEMBER m_method)
-    Q_PROPERTY(Client* client MEMBER m_client)
-    
-protected:
-    QString m_plugin;
-    QString m_method;
-    Client* m_client;
-    
-public:
-    Proxy();
-    Q_INVOKABLE void call(QVariantList params);
-    
-public Q_SLOTS:
-    void push(QVariant value);
-    void push(int code,QString what);
-
-Q_SIGNALS:
-    void response(QVariant value);
-    void error(int code,QString what);
-
 };
 
 class N4DPlugin : public QQmlExtensionPlugin
