@@ -64,22 +64,35 @@ void Worker::push(Job* job)
         params.push_back(v);
     }
     
-    n4d::Client nc;
+    n4d::auth::Credential n4dCredential;
     
-    if (job->m_user.size()!=0) {
-        nc=n4d::Client (job->m_address.toStdString(),
-               job->m_port,
-               job->m_user.toStdString(),
-               job->m_password.toStdString());
+    switch (job->m_credential) {
+        case Client::Password:
+            n4dCredential = n4d::auth::Credential(job->m_user.toStdString(),job->m_password.toStdString());
+        break;
+        
+        case Client::Key:
+            n4dCredential = n4d::auth::Credential(job->m_user.toStdString(),n4d::auth::Key(job->m_key.toStdString()));
+        break;
+        
+        case Client::MasterKey:
+            n4dCredential = n4d::auth::Credential(n4d::auth::Key(job->m_key.toStdString()));
+        break;
+        
+        default:
+            break;
     }
-    else {
-        nc=n4d::Client (job->m_address.toStdString(),
-           job->m_port);
-    }
+    
+    n4d::Client nc(job->m_address.toStdString(),job->m_port,n4dCredential);
     
     try {
-        res = nc.call(job->m_plugin.toStdString(),
-                      job->m_method.toStdString());
+        if (job->m_plugin.size()>0) {
+            res = nc.call(job->m_plugin.toStdString(),
+                      job->m_method.toStdString(),params);
+        }
+        else {
+            res = nc.builtin_call(job->m_method.toStdString(),params);
+        }
         
         QVariant value = convert(res);
         emit result(job,value);
@@ -93,7 +106,7 @@ Client::Client()
 {
     m_address=QLatin1String("https://localhost");
     m_port=9800;
-    m_credentialType = Client::Anonymous;
+    m_credential = Client::Anonymous;
     
     m_worker = new Worker();
     
