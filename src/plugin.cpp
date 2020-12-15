@@ -98,37 +98,37 @@ void Worker::push(Job* job)
         emit result(job,value);
     }
     catch (n4d::exception::UnknownClass& e) {
-        emit error(job,n4d::ErrorCode::UnknownClass,QString::fromUtf8(e.what()));
+        emit error(job,Error::UnknownClass,QString::fromUtf8(e.what()));
     }
     catch (n4d::exception::UnknownMethod& e) {
-        emit error(job,n4d::ErrorCode::UnknownMethod,QString::fromUtf8(e.what()));
+        emit error(job,Error::UnknownMethod,QString::fromUtf8(e.what()));
     }
     catch (n4d::exception::UserNotAllowed& e) {
-        emit error(job,n4d::ErrorCode::UserNotAllowed,QString::fromUtf8(e.what()));
+        emit error(job,Error::UserNotAllowed,QString::fromUtf8(e.what()));
     }
     catch (n4d::exception::AuthenticationFailed& e) {
-        emit error(job,n4d::ErrorCode::AuthenticationFailed,QString::fromUtf8(e.what()));
+        emit error(job,Error::AuthenticationFailed,QString::fromUtf8(e.what()));
     }
     catch (n4d::exception::InvalidMethodResponse& e) {
-        emit error(job,n4d::ErrorCode::InvalidResponse,QString::fromUtf8(e.what()));
+        emit error(job,Error::InvalidResponse,QString::fromUtf8(e.what()));
     }
     catch (n4d::exception::InvalidServerResponse& e) {
-        emit error(job,-1001,QString::fromUtf8(e.what()));
+        emit error(job,Error::InvalidServerResponse,QString::fromUtf8(e.what()));
     }
     catch (n4d::exception::InvalidArguments& e) {
-        emit error(job,n4d::ErrorCode::InvalidArguments,QString::fromUtf8(e.what()));
+        emit error(job,Error::InvalidArguments,QString::fromUtf8(e.what()));
     }
     catch (n4d::exception::UnhandledError& e) {
-        emit error(job,n4d::ErrorCode::UnhandledError,QString::fromUtf8(e.what()));
+        emit error(job,Error::UnhandledError,QString::fromUtf8(e.what()));
     }
     catch (n4d::exception::CallFailed& e) {
         QVariantMap details;
         details[QLatin1String("code")]=e.code;
         details[QLatin1String("message")]=QString::fromStdString(e.message);
-        emit error(job,n4d::ErrorCode::CallFailed,QString::fromUtf8(e.what()),details);
+        emit error(job,Error::CallFailed,QString::fromUtf8(e.what()),details);
     }
     catch (n4d::exception::UnknownCode& e) {
-        emit error(job,-1002,QString::fromUtf8(e.what()));
+        emit error(job,Error::UnknownCode,QString::fromUtf8(e.what()));
     }
     catch (std::exception& e) {
         emit error(job,-1000,QString::fromUtf8(e.what()));
@@ -162,7 +162,7 @@ void Client::onResult(Job* job, QVariant value)
 
 void Client::onError(Job* job,int code, QString what,QVariantMap details)
 {
-    job->m_proxy->push(code,what);
+    job->m_proxy->push(code,what,details);
     delete job;
 }
 
@@ -193,9 +193,9 @@ void Proxy::push(QVariant value)
     emit response(value);
 }
 
-void Proxy::push(int code,QString what)
+void Proxy::push(int code,QString what,QVariantMap details)
 {
-    emit error(code,what);
+    emit error(code,what,details);
 }
 
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
@@ -204,6 +204,7 @@ N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
 
 void N4DPlugin::registerTypes(const char* uri)
 {
+    qmlRegisterType<Error> (uri, 1, 0, "Error");
     qmlRegisterType<Client> (uri, 1, 0, "Client");
     qmlRegisterType<Proxy> (uri, 1, 0, "Proxy");
     qmlRegisterAnonymousType<QMimeData>(uri, 1);

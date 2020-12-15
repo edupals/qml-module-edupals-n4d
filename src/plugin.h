@@ -38,6 +38,31 @@ class Worker;
 class Job;
 class Proxy;
 
+class Error: public QObject
+{
+    Q_OBJECT
+    
+    public:
+        
+    enum ErrorCode
+        {
+            UnknownClass = -40,
+            UnknownMethod = -30,
+            UserNotAllowed = -20,
+            AuthenticationFailed = -10,
+            InvalidResponse = -5,
+            InvalidArguments = -3,
+            UnhandledError = -2,
+            CallFailed = -1,
+            CallSuccessful = 0,
+            InvalidServerResponse = -1001,
+            UnknownCode = -1002
+        };
+        
+    Q_ENUM(ErrorCode)
+    
+};
+
 class Client: public QObject
 {
     Q_OBJECT
@@ -97,11 +122,11 @@ public:
     
 public Q_SLOTS:
     void push(QVariant value);
-    void push(int code,QString what);
+    void push(int code,QString what,QVariantMap details);
 
 Q_SIGNALS:
     void response(QVariant value);
-    void error(int code,QString what);
+    void error(int code,QString what,QVariantMap details);
 
 };
 
