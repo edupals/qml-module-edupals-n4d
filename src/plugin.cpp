@@ -97,8 +97,41 @@ void Worker::push(Job* job)
         QVariant value = convert(res);
         emit result(job,value);
     }
+    catch (n4d::exception::UnknownClass& e) {
+        emit error(job,n4d::ErrorCode::UnknownClass,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::UnknownMethod& e) {
+        emit error(job,n4d::ErrorCode::UnknownMethod,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::UserNotAllowed& e) {
+        emit error(job,n4d::ErrorCode::UserNotAllowed,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::AuthenticationFailed& e) {
+        emit error(job,n4d::ErrorCode::AuthenticationFailed,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::InvalidMethodResponse& e) {
+        emit error(job,n4d::ErrorCode::InvalidResponse,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::InvalidServerResponse& e) {
+        emit error(job,-1001,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::InvalidArguments& e) {
+        emit error(job,n4d::ErrorCode::InvalidArguments,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::UnhandledError& e) {
+        emit error(job,n4d::ErrorCode::UnhandledError,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::CallFailed& e) {
+        QVariantMap details;
+        details[QLatin1String("code")]=e.code;
+        details[QLatin1String("message")]=QString::fromStdString(e.message);
+        emit error(job,n4d::ErrorCode::CallFailed,QString::fromUtf8(e.what()),details);
+    }
+    catch (n4d::exception::UnknownCode& e) {
+        emit error(job,-1002,QString::fromUtf8(e.what()));
+    }
     catch (std::exception& e) {
-        emit error(job,1,QString::fromUtf8(e.what()));
+        emit error(job,-1000,QString::fromUtf8(e.what()));
     }
 }
 
@@ -127,7 +160,7 @@ void Client::onResult(Job* job, QVariant value)
     delete job;
 }
 
-void Client::onError(Job* job,int code, QString what)
+void Client::onError(Job* job,int code, QString what,QVariantMap details)
 {
     job->m_proxy->push(code,what);
     delete job;

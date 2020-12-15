@@ -32,6 +32,7 @@
 #include <QString>
 #include <QList>
 #include <QThread>
+#include <QVariant>
 
 class Worker;
 class Job;
@@ -71,7 +72,7 @@ protected:
     
 protected Q_SLOTS:
     void onResult(Job* job, QVariant value);
-    void onError(Job* job,int code, QString what);
+    void onError(Job* job,int code, QString what,QVariantMap details);
     
 public Q_SLOTS:
     void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
@@ -155,7 +156,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void result(Job* job,QVariant value);
-    void error(Job* job,int code, QString what);
+    void error(Job* job,int code, QString what,QVariantMap details={});
 };
 
 class N4DPlugin : public QQmlExtensionPlugin
