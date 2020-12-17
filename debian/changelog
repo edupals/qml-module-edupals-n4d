@@ -1,3 +1,10 @@
+qml-module-edupals-n4d (2.0.0.0-alfa) focal; urgency=medium
+
+  * Master tag: 4a5ac5e61eca0fca4571568699dc03d601a0f5c5 
+  * alfa release
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Fri, 18 Dec 2020 00:08:14 +0100
+
 qml-module-edupals-n4d (1.0.1.0) bionic; urgency=medium
 
   * Master release: 5a8a8dc394bcd952c83ebeb7366be28b875f2b66
