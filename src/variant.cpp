@@ -34,6 +34,10 @@ variant::Variant convert(QVariant in)
     
     string tname = in.typeName();
     
+    if (tname=="bool") {
+        ret=in.toBool();
+    }
+    
     if (tname=="int") {
         ret=in.toInt();
     }

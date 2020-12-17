@@ -64,36 +64,82 @@ void Worker::push(Job* job)
         params.push_back(v);
     }
     
-    n4d::Client nc;
+    n4d::auth::Credential n4dCredential;
     
-    if (job->m_user.size()!=0) {
-        nc=n4d::Client (job->m_address.toStdString(),
-               job->m_port,
-               job->m_user.toStdString(),
-               job->m_password.toStdString());
+    switch (job->m_credential) {
+        case Client::Password:
+            n4dCredential = n4d::auth::Credential(job->m_user.toStdString(),job->m_password.toStdString());
+        break;
+        
+        case Client::Key:
+            n4dCredential = n4d::auth::Credential(job->m_user.toStdString(),n4d::auth::Key(job->m_key.toStdString()));
+        break;
+        
+        case Client::MasterKey:
+            n4dCredential = n4d::auth::Credential(n4d::auth::Key(job->m_key.toStdString()));
+        break;
+        
+        default:
+            break;
     }
-    else {
-        nc=n4d::Client (job->m_address.toStdString(),
-           job->m_port);
-    }
+    
+    n4d::Client nc(job->m_address.toStdString(),job->m_port,n4dCredential);
     
     try {
-        res = nc.call(job->m_plugin.toStdString(),
-                      job->m_method.toStdString());
+        if (job->m_plugin.size()>0) {
+            res = nc.call(job->m_plugin.toStdString(),
+                      job->m_method.toStdString(),params);
+        }
+        else {
+            res = nc.builtin_call(job->m_method.toStdString(),params);
+        }
         
         QVariant value = convert(res);
         emit result(job,value);
     }
+    catch (n4d::exception::UnknownClass& e) {
+        emit error(job,Error::UnknownClass,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::UnknownMethod& e) {
+        emit error(job,Error::UnknownMethod,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::UserNotAllowed& e) {
+        emit error(job,Error::UserNotAllowed,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::AuthenticationFailed& e) {
+        emit error(job,Error::AuthenticationFailed,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::InvalidMethodResponse& e) {
+        emit error(job,Error::InvalidResponse,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::InvalidServerResponse& e) {
+        emit error(job,Error::InvalidServerResponse,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::InvalidArguments& e) {
+        emit error(job,Error::InvalidArguments,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::UnhandledError& e) {
+        emit error(job,Error::UnhandledError,QString::fromUtf8(e.what()));
+    }
+    catch (n4d::exception::CallFailed& e) {
+        QVariantMap details;
+        details[QLatin1String("code")]=e.code;
+        details[QLatin1String("message")]=QString::fromStdString(e.message);
+        emit error(job,Error::CallFailed,QString::fromUtf8(e.what()),details);
+    }
+    catch (n4d::exception::UnknownCode& e) {
+        emit error(job,Error::UnknownCode,QString::fromUtf8(e.what()));
+    }
     catch (std::exception& e) {
-        emit error(job,1,QString::fromUtf8(e.what()));
+        emit error(job,-1000,QString::fromUtf8(e.what()));
     }
 }
 
 Client::Client()
 {
     m_address=QLatin1String("https://localhost");
-    m_port=9779;
-    m_anonymous=false;
+    m_port=9800;
+    m_credential = Client::Anonymous;
     
     m_worker = new Worker();
     
@@ -114,22 +160,17 @@ void Client::onResult(Job* job, QVariant value)
     delete job;
 }
 
-void Client::onError(Job* job,int code, QString what)
+void Client::onError(Job* job,int code, QString what,QVariantMap details)
 {
-    job->m_proxy->push(code,what);
+    job->m_proxy->push(code,what,details);
     delete job;
 }
 
 void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList params)
 {
     Job* job;
-    
-    if (m_anonymous) {
-        job = new Job(proxy,m_address,m_port,QLatin1String(""),QLatin1String(""),plugin,method,params);
-    } 
-    else {
-        job = new Job(proxy,m_address,m_port,m_user,m_password,plugin,method,params);
-    }
+
+    job = new Job(proxy,m_address,m_port,m_user,m_password,m_key,m_credential,plugin,method,params);
     
     QMetaObject::invokeMethod(m_worker,"push",Qt::QueuedConnection,
             Q_ARG(Job*,job));
@@ -149,13 +190,12 @@ void Proxy::call(QVariantList params)
 
 void Proxy::push(QVariant value)
 {
-    
     emit response(value);
 }
 
-void Proxy::push(int code,QString what)
+void Proxy::push(int code,QString what,QVariantMap details)
 {
-    emit error(code,what);
+    emit error(code,what,details);
 }
 
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
@@ -164,6 +204,7 @@ N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
 
 void N4DPlugin::registerTypes(const char* uri)
 {
+    qmlRegisterType<Error> (uri, 1, 0, "Error");
     qmlRegisterType<Client> (uri, 1, 0, "Client");
     qmlRegisterType<Proxy> (uri, 1, 0, "Proxy");
     qmlRegisterAnonymousType<QMimeData>(uri, 1);

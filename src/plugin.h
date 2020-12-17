@@ -32,57 +32,35 @@
 #include <QString>
 #include <QList>
 #include <QThread>
+#include <QVariant>
 
+class Worker;
+class Job;
 class Proxy;
 
-class Job: public QObject
+class Error: public QObject
 {
     Q_OBJECT
     
-public:
-    Proxy* m_proxy;
+    public:
+        
+    enum ErrorCode
+        {
+            UnknownClass = -40,
+            UnknownMethod = -30,
+            UserNotAllowed = -20,
+            AuthenticationFailed = -10,
+            InvalidResponse = -5,
+            InvalidArguments = -3,
+            UnhandledError = -2,
+            CallFailed = -1,
+            CallSuccessful = 0,
+            InvalidServerResponse = -1001,
+            UnknownCode = -1002
+        };
+        
+    Q_ENUM(ErrorCode)
     
-    QString m_address;
-    int m_port;
-
-    QString m_user;
-    QString m_password;
-    
-    QString m_plugin;
-    QString m_method;
-    
-    QVariantList m_params;
-    
-    Job(Proxy* proxy,QString address,int port,QString user,QString password, QString plugin, QString method, QVariantList params) :
-        m_proxy(proxy),
-        m_address(address),
-        m_port(port),
-        m_user(user),
-        m_password(password),
-        m_plugin(plugin),
-        m_method(method),
-        m_params(params) {
-            
-        }
-};
-
-class Worker: public QObject
-{
-    Q_OBJECT
-
-protected:
-    QThread* m_thread;
-    
-public:
-    Worker();
-    ~Worker();
-    
-public Q_SLOTS:
-    void push(Job* job);
-
-Q_SIGNALS:
-    void result(Job* job,QVariant value);
-    void error(Job* job,int code, QString what);
 };
 
 class Client: public QObject
@@ -93,8 +71,17 @@ class Client: public QObject
     Q_PROPERTY(int port MEMBER m_port)
     Q_PROPERTY(QString user MEMBER m_user)
     Q_PROPERTY(QString password MEMBER m_password)
-    Q_PROPERTY(bool anonymous MEMBER m_anonymous)
+    Q_PROPERTY(QString key MEMBER m_key)
+    Q_PROPERTY(CredentialType credential MEMBER m_credential)
     
+public:
+    
+    enum CredentialType { Anonymous, Password, Key, MasterKey};
+    Q_ENUM(CredentialType)
+    
+    Client();
+    ~Client();
+
 protected:
     
     QString m_address;
@@ -102,19 +89,15 @@ protected:
     
     QString m_user;
     QString m_password;
+    QString m_key;
     
-    bool m_anonymous;
+    CredentialType m_credential;
     
     Worker* m_worker;
     
-public:
-    
-    Client();
-    ~Client();
-
 protected Q_SLOTS:
     void onResult(Job* job, QVariant value);
-    void onError(Job* job,int code, QString what);
+    void onError(Job* job,int code, QString what,QVariantMap details);
     
 public Q_SLOTS:
     void push(Proxy* proxy, QString plugin, QString method, QVariantList params);
@@ -139,12 +122,66 @@ public:
     
 public Q_SLOTS:
     void push(QVariant value);
-    void push(int code,QString what);
+    void push(int code,QString what,QVariantMap details);
 
 Q_SIGNALS:
     void response(QVariant value);
-    void error(int code,QString what);
+    void error(int code,QString what,QVariantMap details);
 
+};
+
+class Job: public QObject
+{
+    Q_OBJECT
+    
+public:
+    Proxy* m_proxy;
+    
+    QString m_address;
+    int m_port;
+
+    QString m_user;
+    QString m_password;
+    QString m_key;
+    Client::CredentialType m_credential;
+    
+    QString m_plugin;
+    QString m_method;
+    
+    QVariantList m_params;
+    
+    Job(Proxy* proxy,QString address,int port,QString user,QString password,QString key, Client::CredentialType credential, QString plugin, QString method, QVariantList params) :
+        m_proxy(proxy),
+        m_address(address),
+        m_port(port),
+        m_user(user),
+        m_password(password),
+        m_key(key),
+        m_credential(credential),
+        m_plugin(plugin),
+        m_method(method),
+        m_params(params) {
+            
+        }
+};
+
+class Worker: public QObject
+{
+    Q_OBJECT
+
+protected:
+    QThread* m_thread;
+    
+public:
+    Worker();
+    ~Worker();
+    
+public Q_SLOTS:
+    void push(Job* job);
+
+Q_SIGNALS:
+    void result(Job* job,QVariant value);
+    void error(Job* job,int code, QString what,QVariantMap details={});
 };
 
 class N4DPlugin : public QQmlExtensionPlugin
