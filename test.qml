@@ -8,8 +8,7 @@ Item {
 N4D.Client
 {
     id: client
-    address: "https://localhost"
-    port:9800
+    address: "https://localhost:9779"
     
     user: "quique"
     password: txtPass.text

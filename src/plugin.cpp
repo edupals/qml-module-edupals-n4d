@@ -83,7 +83,7 @@ void Worker::push(Job* job)
             break;
     }
     
-    n4d::Client nc(job->m_address.toStdString(),job->m_port,n4dCredential);
+    n4d::Client nc(job->m_address.toStdString(),n4dCredential);
     
     try {
         if (job->m_plugin.size()>0) {
@@ -137,8 +137,7 @@ void Worker::push(Job* job)
 
 Client::Client()
 {
-    m_address=QLatin1String("https://localhost");
-    m_port=9800;
+    m_address=QLatin1String("https://localhost:9779");
     m_credential = Client::Anonymous;
     
     m_worker = new Worker();
@@ -170,7 +169,7 @@ void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList par
 {
     Job* job;
 
-    job = new Job(proxy,m_address,m_port,m_user,m_password,m_key,m_credential,plugin,method,params);
+    job = new Job(proxy,m_address,m_user,m_password,m_key,m_credential,plugin,method,params);
     
     QMetaObject::invokeMethod(m_worker,"push",Qt::QueuedConnection,
             Q_ARG(Job*,job));
