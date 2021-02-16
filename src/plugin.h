@@ -68,7 +68,6 @@ class Client: public QObject
     Q_OBJECT
     
     Q_PROPERTY(QString address MEMBER m_address)
-    Q_PROPERTY(int port MEMBER m_port)
     Q_PROPERTY(QString user MEMBER m_user)
     Q_PROPERTY(QString password MEMBER m_password)
     Q_PROPERTY(QString key MEMBER m_key)
@@ -85,7 +84,6 @@ public:
 protected:
     
     QString m_address;
-    int m_port;
     
     QString m_user;
     QString m_password;
@@ -138,7 +136,6 @@ public:
     Proxy* m_proxy;
     
     QString m_address;
-    int m_port;
 
     QString m_user;
     QString m_password;
@@ -150,10 +147,9 @@ public:
     
     QVariantList m_params;
     
-    Job(Proxy* proxy,QString address,int port,QString user,QString password,QString key, Client::CredentialType credential, QString plugin, QString method, QVariantList params) :
+    Job(Proxy* proxy,QString address,QString user,QString password,QString key, Client::CredentialType credential, QString plugin, QString method, QVariantList params) :
         m_proxy(proxy),
         m_address(address),
-        m_port(port),
         m_user(user),
         m_password(password),
         m_key(key),
