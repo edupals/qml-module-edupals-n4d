@@ -1,3 +1,9 @@
+qml-module-edupals-n4d (2.0.1.0) focal; urgency=medium
+
+  * Master tag: c5941010e4a775db92b8eed52cac963a8aee7b97
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Tue, 16 Feb 2021 12:20:28 +0100
+
 qml-module-edupals-n4d (2.0.0.0) focal; urgency=medium
 
   * Master tag: 4a5ac5e61eca0fca4571568699dc03d601a0f5c5 
