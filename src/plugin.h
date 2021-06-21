@@ -75,7 +75,7 @@ class Client: public QObject
     
 public:
     
-    enum CredentialType { Anonymous, Password, Key, MasterKey};
+    enum CredentialType { Anonymous, Password, Key, MasterKey, LocalKey};
     Q_ENUM(CredentialType)
     
     Client();

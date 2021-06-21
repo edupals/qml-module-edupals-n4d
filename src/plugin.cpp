@@ -65,6 +65,7 @@ void Worker::push(Job* job)
     }
     
     n4d::auth::Credential n4dCredential;
+    n4d::auth::Key key;
     
     switch (job->m_credential) {
         case Client::Password:
@@ -72,13 +73,47 @@ void Worker::push(Job* job)
         break;
         
         case Client::Key:
-            n4dCredential = n4d::auth::Credential(job->m_user.toStdString(),n4d::auth::Key(job->m_key.toStdString()));
+            key = n4d::auth::Key(job->m_key.toStdString());
+            n4dCredential = n4d::auth::Credential(job->m_user.toStdString(),key);
         break;
         
         case Client::MasterKey:
-            n4dCredential = n4d::auth::Credential(n4d::auth::Key(job->m_key.toStdString()));
+            
+            if (job->m_key.size()!=0) {
+                key = n4d::auth::Key(job->m_key.toStdString());
+            }
+            else {
+                // try to load a master key
+                key = n4d::auth::Key::master_key();
+            }
+            
+            n4dCredential = n4d::auth::Credential(key);
         break;
         
+        case Client::LocalKey:
+            key = n4d::auth::Key::user_key(job->m_user.toStdString());
+            
+            if (!key.valid()) {
+                //perform a second attempt
+                n4d::Client lc("https://localhost:9779",job->m_user.toStdString(),"");
+                
+                n4d::Ticket ticket = lc.create_ticket();
+                
+                if (ticket.valid()) {
+                    n4dCredential = ticket.get_credential();
+                }
+                else {
+                    // key is invalid but we push it anyway so user gets a 
+                    // consistent error response
+                    n4dCredential = n4d::auth::Credential(job->m_user.toStdString(),key);
+                }
+            }
+            else {
+                n4dCredential = n4d::auth::Credential(job->m_user.toStdString(),key);
+            }
+            
+        break;
+            
         default:
             break;
     }
