@@ -1,3 +1,10 @@
+qml-module-edupals-n4d (2.1.0.0) focal; urgency=medium
+
+  * Master tag: 2a8bbc8a8b6eb118ce5f846ba3597d15c98cbaf3
+  * Added local key auto-load support
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Mon, 21 Jun 2021 12:40:52 +0200
+
 qml-module-edupals-n4d (2.0.1.0) focal; urgency=medium
 
   * Master tag: c5941010e4a775db92b8eed52cac963a8aee7b97
