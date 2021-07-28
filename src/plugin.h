@@ -82,7 +82,7 @@ public:
     Client();
     ~Client();
     
-    Q_INVOKABLE void call(QString plugin,QString method,QVariantList params,QJSValue callback, QJSValue error);
+    Q_INVOKABLE QVariant call(QString plugin,QString method,QVariantList params);
 
 protected:
     

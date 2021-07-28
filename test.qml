@@ -39,7 +39,7 @@ N4D.Proxy
 QQC2.Pane
 {
     
-    width: 400
+    width: 500
     height: 300
     
     Column {
@@ -82,7 +82,10 @@ QQC2.Pane
                 
                 onClicked: {
                     
-                    get_variable.call(["patata",true]);
+                    //get_variable.call(["patata",true]);
+                    var v = client.call("LliurexVersion","lliurex_versions",[]);
+                    console.log("value:",v);
+                            
                 }
             }
             
