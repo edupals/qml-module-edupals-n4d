@@ -33,6 +33,7 @@
 #include <QList>
 #include <QThread>
 #include <QVariant>
+#include <QJSValue>
 
 class Worker;
 class Job;
@@ -80,6 +81,8 @@ public:
     
     Client();
     ~Client();
+    
+    Q_INVOKABLE void call(QString plugin,QString method,QVariantList params,QJSValue callback, QJSValue error);
 
 protected:
     

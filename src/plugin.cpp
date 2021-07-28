@@ -187,6 +187,25 @@ Client::~Client()
     delete m_worker;
 }
 
+void Client::call(QString plugin,QString method,QVariantList params,QJSValue callback, QJSValue error)
+{
+    Worker* worker = new Worker();
+    Job* job;
+    
+    connect(worker,&Worker::result,[=] {
+        
+    });
+    connect(worker,&Worker::error,[=] {
+        
+    });
+
+    job = new Job(nullptr,m_address,m_user,m_password,m_key,m_credential,plugin,method,params);
+    QMetaObject::invokeMethod(worker,"push",Qt::BlockingQueuedConnection,
+            Q_ARG(Job*,job));
+    
+    delete worker;
+}
+
 void Client::onResult(Job* job, QVariant value)
 {
     job->m_proxy->push(value);
