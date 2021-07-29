@@ -115,15 +115,22 @@ class Proxy: public QObject
     Q_PROPERTY(QString plugin MEMBER m_plugin)
     Q_PROPERTY(QString method MEMBER m_method)
     Q_PROPERTY(Client* client MEMBER m_client)
+    Q_PROPERTY(bool busy MEMBER m_busy READ busy NOTIFY busyChanged)
     
 protected:
     QString m_plugin;
     QString m_method;
+    bool m_busy;
     Client* m_client;
     
 public:
     Proxy();
     Q_INVOKABLE void call(QVariantList params);
+    
+    bool busy() const
+    {
+        return m_busy;
+    }
     
 public Q_SLOTS:
     void push(QVariant value);
@@ -132,7 +139,7 @@ public Q_SLOTS:
 Q_SIGNALS:
     void response(QVariant value);
     void error(int code,QString what,QVariantMap details);
-
+    void busyChanged();
 };
 
 class Job: public QObject

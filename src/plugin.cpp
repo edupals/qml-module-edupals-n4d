@@ -234,25 +234,32 @@ void Client::push(Proxy* proxy, QString plugin, QString method, QVariantList par
             Q_ARG(Job*,job));
 }
 
-Proxy::Proxy()
+Proxy::Proxy() : m_busy(false), m_client(nullptr)
 {
-    m_client=nullptr;
+    emit busyChanged();
 }
 
 void Proxy::call(QVariantList params)
 {
     if (m_client) {
+        m_busy=true;
+        emit busyChanged();
+        
         m_client->push(this,m_plugin,m_method,params);
     }
 }
 
 void Proxy::push(QVariant value)
 {
+    m_busy=false;
+    emit busyChanged();
     emit response(value);
 }
 
 void Proxy::push(int code,QString what,QVariantMap details)
 {
+    m_busy=false;
+    emit busyChanged();
     emit error(code,what,details);
 }
 
