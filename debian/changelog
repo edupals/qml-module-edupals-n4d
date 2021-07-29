@@ -1,3 +1,10 @@
+qml-module-edupals-n4d (2.2.0.0) focal; urgency=medium
+
+  * Master tag: 97e69656caf1bbe7ffbab0133b3a46c853a115b8
+  * Added synchronous calls for debugging purposes
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Thu, 29 Jul 2021 10:13:22 +0200
+
 qml-module-edupals-n4d (2.1.0.0) focal; urgency=medium
 
   * Master tag: 2a8bbc8a8b6eb118ce5f846ba3597d15c98cbaf3
