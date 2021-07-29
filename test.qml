@@ -3,44 +3,42 @@ import QtQuick.Controls 2.6 as QQC2
 
 import Edupals.N4D 1.0 as N4D
 
-Item {
-    
-N4D.Client
-{
-    id: client
-    address: "https://localhost:9779"
-    
-    user: "quique"
-    password: txtPass.text
-    
-    credential: N4D.Client.Password
-}
-
-N4D.Proxy
-{
-    id: get_variable
-    client: client
-    //plugin: "RepoManager"
-    method: "get_variable"
-    
-    onError: {
-        console.log("error:",what)
-    }
-    
-    onResponse: {
-        console.log("response:",value)
-        for (var v in value) {
-            console.log(v);
-        }
-        console.log(value)
-    }
-}
-    
 QQC2.Pane
 {
+    N4D.Client
+    {
+        id: client
+        address: "https://localhost:9779"
+        
+        user: "quique"
+        password: txtPass.text
+        
+        credential: N4D.Client.Password
+    }
+
+    N4D.Proxy
+    {
+        id: get_variables
+        client: client
+        //plugin: "Test"
+        method: "get_variables"
+        
+        onError: {
+            console.log("error:",what)
+        }
+        
+        onResponse: {
+            console.log("response:",value)
+            for (var v in value) {
+                console.log(v);
+            }
+            console.log(value)
+        }
+    }
     
     width: 500
     height: 300
+    enabled: !get_variables.busy
     
     Column {
         Row {
@@ -83,8 +81,9 @@ QQC2.Pane
                 onClicked: {
                     
                     //get_variable.call(["patata",true]);
-                    var v = client.call("","get_version",[]);
-                    console.log("value:",v);
+                    //var v = client.call("","get_version",[]);
+                    //console.log("value:",v);
+                    get_variables.call([]);
                             
                 }
             }
@@ -97,4 +96,4 @@ QQC2.Pane
         //list_sources.call([])       
     }
 }
-}
+
