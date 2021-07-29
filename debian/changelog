@@ -1,3 +1,10 @@
+qml-module-edupals-n4d (2.3.0.0) focal; urgency=medium
+
+  * Master tag: 7be6d6b9e8fe9b6fed2ae1892b123c129969b5a6
+  * Added a proxy busy flag
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Fri, 30 Jul 2021 00:17:17 +0200
+
 qml-module-edupals-n4d (2.2.0.0) focal; urgency=medium
 
   * Master tag: 97e69656caf1bbe7ffbab0133b3a46c853a115b8
