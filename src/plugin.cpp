@@ -197,7 +197,8 @@ QVariant Client::call(QString plugin,QString method,QVariantList params)
         ret.setValue(value);
     });
     connect(worker,&Worker::error,[=] (Job* job,int code, QString what,QVariantMap details) mutable {
-        qmlEngine(this)->throwError(what);
+        QString msg = QString(QStringLiteral("[%1]:%2")).arg(code).arg(what);
+        qmlEngine(this)->throwError(msg);
     });
 
     job = new Job(nullptr,m_address,m_user,m_password,m_key,m_credential,plugin,method,params);

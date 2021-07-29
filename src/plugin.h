@@ -82,6 +82,10 @@ public:
     Client();
     ~Client();
     
+    /*!
+      This is a synchronous (blocking) call. Use it only for development/testing
+      purposes
+     */
     Q_INVOKABLE QVariant call(QString plugin,QString method,QVariantList params);
 
 protected:

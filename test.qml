@@ -83,7 +83,7 @@ QQC2.Pane
                 onClicked: {
                     
                     //get_variable.call(["patata",true]);
-                    var v = client.call("LliurexVersion","lliurex_versions",[]);
+                    var v = client.call("","get_version",[]);
                     console.log("value:",v);
                             
                 }
