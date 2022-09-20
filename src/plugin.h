@@ -88,6 +88,17 @@ public:
      */
     Q_INVOKABLE QVariant call(QString plugin,QString method,QVariantList params);
 
+    /*!
+        Synchronous call to built-in method get_variable
+        @param variableName Variable name to get
+     */
+    Q_INVOKABLE QVariant get_variable(QString variableName);
+
+    /*!
+        Synchronous call to built-in method get_variables
+    */
+    Q_INVOKABLE QVariant get_variables();
+
 protected:
     
     QString m_address;
@@ -126,7 +137,7 @@ protected:
 public:
     Proxy();
     Q_INVOKABLE void call(QVariantList params);
-    
+
     bool busy() const
     {
         return m_busy;

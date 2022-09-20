@@ -94,6 +94,11 @@ QQC2.Pane
     Component.onCompleted: {
         //get_info.call([1,"dos",3.2,{"a":32,"b":64,"c":128},[1,2,3,4]])
         //list_sources.call([])       
+        console.log("variables:")
+        var variables = client.get_variables()
+        for (var key in variables) {
+            console.log(key);
+        }
     }
 }
 

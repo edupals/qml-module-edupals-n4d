@@ -211,6 +211,16 @@ QVariant Client::call(QString plugin,QString method,QVariantList params)
     return ret;
 }
 
+QVariant Client::get_variable(QString variableName)
+{
+    return call(QStringLiteral(""),QStringLiteral("get_variable"),{variableName});
+}
+
+QVariant Client::get_variables()
+{
+    return call(QStringLiteral(""),QStringLiteral("get_variables"),{});
+}
+
 void Client::onResult(Job* job, QVariant value)
 {
     job->m_proxy->push(value);
