@@ -92,12 +92,12 @@ public:
         Synchronous call to built-in method get_variable
         @param variableName Variable name to get
      */
-    Q_INVOKABLE QVariant get_variable(QString variableName);
+    Q_INVOKABLE QVariant getVariable(QString variableName);
 
     /*!
         Synchronous call to built-in method get_variables
     */
-    Q_INVOKABLE QVariant get_variables();
+    Q_INVOKABLE QVariant getVariables();
 
 protected:
     

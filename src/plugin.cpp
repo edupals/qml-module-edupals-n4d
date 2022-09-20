@@ -211,12 +211,12 @@ QVariant Client::call(QString plugin,QString method,QVariantList params)
     return ret;
 }
 
-QVariant Client::get_variable(QString variableName)
+QVariant Client::getVariable(QString variableName)
 {
     return call(QStringLiteral(""),QStringLiteral("get_variable"),{variableName});
 }
 
-QVariant Client::get_variables()
+QVariant Client::getVariables()
 {
     return call(QStringLiteral(""),QStringLiteral("get_variables"),{});
 }
