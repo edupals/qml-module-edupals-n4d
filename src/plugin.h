@@ -144,12 +144,12 @@ public:
     }
     
 public Q_SLOTS:
-    void push(QVariant value);
-    void push(int code,QString what,QVariantMap details);
+    void push(QVariant value, QVariantList params);
+    void push(int code,QString what,QVariantMap details, QVariantList params);
 
 Q_SIGNALS:
-    void response(QVariant value);
-    void error(int code,QString what,QVariantMap details);
+    void response(QVariant value, QVariantList params);
+    void error(int code,QString what,QVariantMap details, QVariantList params);
     void busyChanged();
 };
 

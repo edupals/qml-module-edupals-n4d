@@ -83,7 +83,7 @@ QQC2.Pane
                     //get_variable.call(["patata",true]);
                     //var v = client.call("","get_version",[]);
                     //console.log("value:",v);
-                    get_variables.call([]);
+                    getVariables.call([]);
                             
                 }
             }

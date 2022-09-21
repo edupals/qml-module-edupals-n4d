@@ -223,14 +223,14 @@ QVariant Client::getVariables()
 
 void Client::onResult(Job* job, QVariant value)
 {
-    job->m_proxy->push(value);
+    job->m_proxy->push(value, job->m_params);
     
     delete job;
 }
 
 void Client::onError(Job* job,int code, QString what,QVariantMap details)
 {
-    job->m_proxy->push(code,what,details);
+    job->m_proxy->push(code,what,details,job->m_params);
     delete job;
 }
 
@@ -259,18 +259,18 @@ void Proxy::call(QVariantList params)
     }
 }
 
-void Proxy::push(QVariant value)
+void Proxy::push(QVariant value, QVariantList params)
 {
     m_busy=false;
     emit busyChanged();
-    emit response(value);
+    emit response(value, params);
 }
 
-void Proxy::push(int code,QString what,QVariantMap details)
+void Proxy::push(int code,QString what,QVariantMap details, QVariantList params)
 {
     m_busy=false;
     emit busyChanged();
-    emit error(code,what,details);
+    emit error(code,what,details, params);
 }
 
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)
