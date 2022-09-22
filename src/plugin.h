@@ -57,7 +57,9 @@ class Error: public QObject
             CallFailed = -1,
             CallSuccessful = 0,
             InvalidServerResponse = -1001,
-            UnknownCode = -1002
+            UnknownCode = -1002,
+            VariableNotFound = -2001,
+            VariableProtected = -2002
         };
         
     Q_ENUM(ErrorCode)
@@ -86,7 +88,7 @@ public:
       This is a synchronous (blocking) call. Use it only for development/testing
       purposes
      */
-    Q_INVOKABLE QVariant call(QString plugin,QString method,QVariantList params);
+    Q_INVOKABLE QVariant call(QString plugin,QString method,QVariantList params, bool handleVariable = false);
 
     /*!
         Synchronous call to built-in method get_variable
