@@ -187,7 +187,7 @@ Client::~Client()
     delete m_worker;
 }
 
-QVariant Client::call(QString plugin,QString method,QVariantList params)
+QVariant Client::call(QString plugin,QString method,QVariantList params, bool handleVariable)
 {
     QVariant ret;
     Worker* worker = new Worker();
@@ -197,8 +197,28 @@ QVariant Client::call(QString plugin,QString method,QVariantList params)
         ret.setValue(value);
     });
     connect(worker,&Worker::error,[=] (Job* job,int code, QString what,QVariantMap details) mutable {
-        QString msg = QString(QStringLiteral("[%1]:%2")).arg(code).arg(what);
-        qmlEngine(this)->throwError(msg);
+        if (code == n4d::ErrorCode::CallFailed) {
+            int extraCode = details[QStringLiteral("code")].toInt();
+
+            QString msg = QString(QStringLiteral("[%1,%2]:%3")).arg(code).arg(extraCode).arg(what);
+
+            if (handleVariable) {
+                switch (extraCode) {
+                    case n4d::VariableErrorCode::NotFound:
+                        msg = msg + QString(QStringLiteral(" -> %1")).arg(QStringLiteral("Variable not found"));
+                    break;
+
+                    case n4d::VariableErrorCode::Protected:
+                        msg = msg + QString(QStringLiteral(" -> %1")).arg(QStringLiteral("Variable is protected"));
+                    break;
+                }
+            }
+            qmlEngine(this)->throwError(msg);
+        }
+        else {
+            QString msg = QString(QStringLiteral("[%1]:%2")).arg(code).arg(what);
+            qmlEngine(this)->throwError(msg);
+        }
     });
 
     job = new Job(nullptr,m_address,m_user,m_password,m_key,m_credential,plugin,method,params);
@@ -211,16 +231,26 @@ QVariant Client::call(QString plugin,QString method,QVariantList params)
     return ret;
 }
 
+QVariant Client::getVariable(QString variableName)
+{
+    return call(QStringLiteral(""),QStringLiteral("get_variable"),{variableName},true);
+}
+
+QVariant Client::getVariables()
+{
+    return call(QStringLiteral(""),QStringLiteral("get_variables"),{},true);
+}
+
 void Client::onResult(Job* job, QVariant value)
 {
-    job->m_proxy->push(value);
+    job->m_proxy->push(value, job->m_params);
     
     delete job;
 }
 
 void Client::onError(Job* job,int code, QString what,QVariantMap details)
 {
-    job->m_proxy->push(code,what,details);
+    job->m_proxy->push(code,what,details,job->m_params);
     delete job;
 }
 
@@ -249,18 +279,18 @@ void Proxy::call(QVariantList params)
     }
 }
 
-void Proxy::push(QVariant value)
+void Proxy::push(QVariant value, QVariantList params)
 {
     m_busy=false;
     emit busyChanged();
-    emit response(value);
+    emit response(value, params);
 }
 
-void Proxy::push(int code,QString what,QVariantMap details)
+void Proxy::push(int code,QString what,QVariantMap details, QVariantList params)
 {
     m_busy=false;
     emit busyChanged();
-    emit error(code,what,details);
+    emit error(code,what,details, params);
 }
 
 N4DPlugin::N4DPlugin(QObject* parent) : QQmlExtensionPlugin(parent)

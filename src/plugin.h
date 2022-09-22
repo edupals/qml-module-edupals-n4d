@@ -57,7 +57,9 @@ class Error: public QObject
             CallFailed = -1,
             CallSuccessful = 0,
             InvalidServerResponse = -1001,
-            UnknownCode = -1002
+            UnknownCode = -1002,
+            VariableNotFound = -2001,
+            VariableProtected = -2002
         };
         
     Q_ENUM(ErrorCode)
@@ -86,7 +88,18 @@ public:
       This is a synchronous (blocking) call. Use it only for development/testing
       purposes
      */
-    Q_INVOKABLE QVariant call(QString plugin,QString method,QVariantList params);
+    Q_INVOKABLE QVariant call(QString plugin,QString method,QVariantList params, bool handleVariable = false);
+
+    /*!
+        Synchronous call to built-in method get_variable
+        @param variableName Variable name to get
+     */
+    Q_INVOKABLE QVariant getVariable(QString variableName);
+
+    /*!
+        Synchronous call to built-in method get_variables
+    */
+    Q_INVOKABLE QVariant getVariables();
 
 protected:
     
@@ -126,19 +139,19 @@ protected:
 public:
     Proxy();
     Q_INVOKABLE void call(QVariantList params);
-    
+
     bool busy() const
     {
         return m_busy;
     }
     
 public Q_SLOTS:
-    void push(QVariant value);
-    void push(int code,QString what,QVariantMap details);
+    void push(QVariant value, QVariantList params);
+    void push(int code,QString what,QVariantMap details, QVariantList params);
 
 Q_SIGNALS:
-    void response(QVariant value);
-    void error(int code,QString what,QVariantMap details);
+    void response(QVariant value, QVariantList params);
+    void error(int code,QString what,QVariantMap details, QVariantList params);
     void busyChanged();
 };
 
