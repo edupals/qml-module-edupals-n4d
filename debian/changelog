@@ -1,3 +1,10 @@
+qml-module-edupals-n4d (2.3.1.0) lliurex22; urgency=medium
+
+  * Added getVariable and getVariables sync methods
+  * Call params are added to method async method responses in order to better evaluate results
+
+ -- Enrique Medina Gremaldos <quiqueiii@gmail.com>  Thu, 22 Sep 2022 13:38:12 +0200
+
 qml-module-edupals-n4d (2.3.0.0) focal; urgency=medium
 
   * Master tag: 7be6d6b9e8fe9b6fed2ae1892b123c129969b5a6
