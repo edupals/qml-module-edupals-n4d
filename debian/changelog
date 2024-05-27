@@ -1,3 +1,9 @@
+qml-module-edupals-n4d (2.3.1.2) noble; urgency=medium
+
+  * Noble release
+
+ -- Enrique Medina Gremaldos <quique@necos.es>  Mon, 27 May 2024 11:58:24 +0200
+
 qml-module-edupals-n4d (2.3.1.1) jammy; urgency=medium
 
   * Jammy release

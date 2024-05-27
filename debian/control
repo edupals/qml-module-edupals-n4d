@@ -1,10 +1,11 @@
 Source: qml-module-edupals-n4d
-Section: utils
+Section: libs
 Priority: optional
-Maintainer: Enrique Medina Gremaldos <quiqueiii@gmail.com>
-Build-Depends: debhelper (>=9), cmake, extra-cmake-modules, qtbase5-dev, qtdeclarative5-dev, libkf5coreaddons-dev, libedupals-base-dev, libedupals-n4d-dev
-Standards-Version: 3.9.7
-Homepage: http://lliurex.net
+Maintainer: Enrique Medina Gremaldos <quique@necos.es>
+Build-Depends: debhelper-compat (=13), cmake, extra-cmake-modules, qtbase5-dev, qtdeclarative5-dev, libkf5coreaddons-dev, libedupals-base-dev, libedupals-n4d-dev
+Standards-Version: 4.6.0
+Rules-Requires-Root: no
+Homepage: https://github.com/edupals
 
 Package: qml-module-edupals-n4d
 Architecture: any
