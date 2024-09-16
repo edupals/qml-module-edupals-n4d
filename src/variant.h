@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2020 Edupals project
+ * Copyright (C) 2024 Edupals project
  *
  * Author:
- *  Enrique Medina Gremaldos <quiqueiii@gmail.com>
+ *  Enrique Medina Gremaldos <quique@necos.es>
  *
  * Source:
  *  https://github.com/edupals/qml-module-edupals-n4d
