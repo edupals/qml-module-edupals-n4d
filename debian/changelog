@@ -1,3 +1,9 @@
+qml-module-edupals-n4d (2.3.1.3) noble; urgency=medium
+
+  * Qt6 migration
+
+ -- Enrique Medina Gremaldos <quique@necos.es>  Mon, 16 Sep 2024 12:45:30 +0200
+
 qml-module-edupals-n4d (2.3.1.2) noble; urgency=medium
 
   * Noble release
