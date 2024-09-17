@@ -35,6 +35,7 @@
 #include <vector>
 
 using namespace edupals;
+using namespace edupals::variant;
 using namespace std;
 
 Worker::Worker()
@@ -55,11 +56,11 @@ Worker::~Worker()
 
 void Worker::push(Job* job)
 {
-    vector<variant::Variant> params;
-    variant::Variant res;
+    vector<Variant> params;
+    Variant res;
     
     for (int n=0;n<job->m_params.count();n++) {
-        variant::Variant v = convert(job->m_params[n]);
+        Variant v = convert(job->m_params[n]);
         
         params.push_back(v);
     }
