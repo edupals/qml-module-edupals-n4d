@@ -26,11 +26,12 @@
 #include <string>
 
 using namespace edupals;
+using namespace edupals::variant;
 using namespace std;
 
-variant::Variant convert(QVariant in)
+Variant convert(QVariant in)
 {
-    variant::Variant ret;
+    Variant ret;
     
     string tname = in.typeName();
     
@@ -51,7 +52,7 @@ variant::Variant convert(QVariant in)
     }
     
     if (tname=="QVariantMap") {
-        ret = variant::Variant::create_struct();
+        ret = Variant::create_struct();
         QVariantMap m = in.toMap();
         
         QMap<QString, QVariant>::const_iterator i = m.constBegin();
@@ -62,7 +63,7 @@ variant::Variant convert(QVariant in)
     }
     
     if (tname=="QVariantList") {
-        ret = variant::Variant::create_array(0);
+        ret = Variant::create_array(0);
         QVariantList l = in.toList();
         
         QList<QVariant>::const_iterator i = l.constBegin();
@@ -79,27 +80,27 @@ variant::Variant convert(QVariant in)
     return ret;
 }
 
-QVariant convert(variant::Variant in)
+QVariant convert(Variant in)
 {
     QVariant ret;
     
-    if (in.type()==variant::Type::Boolean) {
+    if (in.type()==Type::Boolean) {
         ret=QVariant(in.get_boolean());
     }
     
-    if (in.type()==variant::Type::Int32) {
+    if (in.type()==Type::Int32) {
         ret=QVariant(in.get_int32());
     }
     
-    if (in.type()==variant::Type::Double) {
+    if (in.type()==Type::Double) {
         ret=QVariant(in.get_double());
     }
     
-    if (in.type()==variant::Type::String) {
+    if (in.type()==Type::String) {
         ret=QVariant(QString::fromUtf8(in.get_string().c_str()));
     }
     
-    if (in.type()==variant::Type::Struct) {
+    if (in.type()==Type::Struct) {
         QMap<QString,QVariant> m;
         
         for (string key:in.keys()) {
@@ -109,7 +110,7 @@ QVariant convert(variant::Variant in)
         ret=QVariant(m);
     }
     
-    if (in.type()==variant::Type::Array) {
+    if (in.type()==Type::Array) {
         QList<QVariant> l;
         
         for (size_t n=0;n<in.count();n++) {
